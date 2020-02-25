@@ -6,10 +6,18 @@ Nested Sampling approach of Skilling. We document the results for the following 
 
 	0) Boston house price dataset - which is a regression problem
 	1) Iris dataset - which is a classification problem
+	
+## Nested sampling
+
+Nested sampling is an approach for calculating bayesian evidences while simultaneously computing the posterior probability distribution of the parameters. The basics steps of this algorithm are:
+
+	0) Draw N 'live points' from the prior, and evaluate their likelihoods
+	1) Delete the lowest likelihood live point, and replace it with a new point drawn from the prior, but at higher likelihood
+	2) Repeat 1) until some stopping criteria is met. 
 
 ## Prior
 
-We assumed a standard normal disrtibution as the prior distribution over the weights (including the biases) for both problem types (regression and classification).
+We assumed a standard normal disrtibution as the prior distribution over the weights (including the biases) for both problem types (regression and classification). This assumption can be relaxed.
 
 ## Likelihood
 
