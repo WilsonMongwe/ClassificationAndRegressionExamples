@@ -27,7 +27,7 @@ def log_likelihood(W, *logl_args):
 
 #Store results
 results_list = [] # to store result of nested sampling
-x_axis = range(1,3,1) # Number of hidden units
+x_axis = range(1,11,1) # Number of hidden units
 # Architecture for mlp
 input_neurons = x_train.shape[1] # inputs
 output_neurons = 1
@@ -38,6 +38,8 @@ for i  in x_axis:
     ndim_1 =  (input_neurons+1) * (hidden_neurons) + (hidden_neurons) * output_neurons
     nlive = ndim_1 * 100
     logl_args = [input_neurons, hidden_neurons, output_neurons]
+    
+    print(" ")
     print("\n NUmber of hidden neurons :::::", hidden_neurons, ":::::::::::::::::::\n")
     
     sampler = dynesty.NestedSampler(log_likelihood,
@@ -71,6 +73,7 @@ ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('Log evidence')
 plt.plot(x_axis, logZ, '-o')
 plt.show()
+fig.savefig('results/boston_log_evidence.png')
 
 plt.style.use(['bmh'])
 fig, ax = plt.subplots(1)
@@ -79,7 +82,7 @@ ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('MSE')
 plt.plot(x_axis, accuracy_list, '-o')
 plt.show()
-
+fig.savefig('results/boston_mse_train.png')
 # test data set
 x = x_test
 y = y_test
@@ -93,4 +96,4 @@ ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('MSE')
 plt.plot(x_axis, accuracy_list, '-o')
 plt.show()
-
+fig.savefig('results/boston_mse_test.png')

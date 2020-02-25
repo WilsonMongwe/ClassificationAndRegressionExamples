@@ -10,9 +10,21 @@ from sklearn import datasets
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn import metrics
 
+def categorical_accuracy(y_true, y_pred):
+    correct = 0
+    total = 0
+    for i in range(len(y_true)):
+        act_label = np.argmax(y_true[i]) 
+        pred_label = np.argmax(y_pred[i]) 
+        if(act_label == pred_label):
+            correct += 1
+        total += 1
+    accuracy = (correct/total)
+    return accuracy
 
 def softmax(x):
-    return scipy.special.softmax(x, axis = 1)
+    e_x = np.exp(x - np.max(x))
+    return (e_x.T / e_x.sum(axis=1)).T 
  
 def multi_cross_entropy(predictions, targets):   
     ce = -np.sum(targets*np.log(predictions+1e-9)) # No division by N
@@ -52,7 +64,7 @@ def multi_class_predictions(X, W, input_neurons, hidden_neurons, output_neurons)
     param_1 = input_neurons * hidden_neurons
     bias_1  =  hidden_neurons
     w_1 = W[0:param_1]
-    w_1 = w_1.reshape((input_neurons,neurons_2))
+    w_1 = w_1.reshape((input_neurons,hidden_neurons))
     b_1 = W[param_1:param_1+ bias_1]
     
     param_2 = hidden_neurons * output_neurons
@@ -102,7 +114,7 @@ def return_results_regression(x, y, results_list, x_axis,
 
 
 
-def multi_return_results(x, y, results_list, x_axis, 
+def multi_class_return_results(x, y, results_list, x_axis, 
                          input_neurons, output_neurons):
     logZ =[]
     for i in results_list:
@@ -125,13 +137,13 @@ def multi_return_results(x, y, results_list, x_axis,
         weights = weights_list[i-1]
         #W, cov = dynesty.utils.mean_and_cov(samples, weights)
         W = samples[index_max_list[i-1]]
-        predictions_list.append(predictions(x, W, 
+        predictions_list.append(multi_class_predictions(x, W, 
                                             input_neurons, hidden_neurons, output_neurons))
     
     accuracy_list = []
     for i  in x_axis:
         y_pred = predictions_list[i-1]
-        accuracy_list.append(metrics.categorical_accuracy(y, y_pred))
+        accuracy_list.append(categorical_accuracy(y, y_pred))
 
     return logZ, accuracy_list
 
