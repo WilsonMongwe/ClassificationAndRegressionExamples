@@ -4,8 +4,8 @@ Can Bayesian evidence be used for machine learning model selection?
 In this mini project we search for the optimal number of hidden units in a single hidden layer perceptron (SLP) using the 
 Nested Sampling approach of Skilling. We document the results for the following datasets:
 
-	0) Boston house price dataset - which is a regression problem
-	1) Iris dataset - which is a classification problem
+	0) Regression problems - Boston house price dataset 
+	1) Classification problems - Iris dataset 
 	
 ## Nested sampling
 
@@ -17,7 +17,7 @@ Nested sampling is an approach for calculating bayesian evidences while simultan
 
 ## Prior
 
-We assumed a standard normal disrtibution as the prior distribution over the weights (including the biases) for both problem types (regression and classification). This assumption can be relaxed.
+We assumed a standard normal disrtibution as the prior distribution over the parameters/weights (including the biases) for both problem types (regression and classification). This assumption can be relaxed.
 
 ## Likelihood
 
