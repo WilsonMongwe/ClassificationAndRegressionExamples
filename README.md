@@ -7,11 +7,11 @@ Nested Sampling approach of Skilling. We document the results for the following 
 	0) Boston house price dataset - which is a regression problem
 	1) Iris dataset - which is a classification problem
 
-Prior
+## Prior
 
-We assumed that a standard normal disrtibution as the prior distribution for both datasets.
+We assumed a standard normal disrtibution as the prior distribution for both datasets.
 
-Likelihood
+## Likelihood
 
 We set out the log likelihood functions as follows:
 
