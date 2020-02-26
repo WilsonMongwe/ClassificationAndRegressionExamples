@@ -29,7 +29,7 @@ def log_likelihood(W, *logl_args):
 
 #Store results
 results_list = [] # to store result of nested sampling
-x_axis = range(1,101,1) # Number of hidden units
+x_axis = range(1,51,1) # Number of hidden units
 # Architecture for mlp
 input_neurons = x_train.shape[1] # inputs
 output_neurons = 3
@@ -65,6 +65,7 @@ print("\n Time :::", end - start)
 # train metrics
 x = x_train
 y = y_train
+
 logZ, accuracy_list = u.multi_class_return_results(x, y, results_list, 
                                         x_axis, input_neurons, output_neurons)
 

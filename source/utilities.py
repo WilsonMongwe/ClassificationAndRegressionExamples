@@ -184,3 +184,69 @@ def return_boston_processed_data():
         X_scaled, Y, test_size = 0.3, random_state = 1)
     
     return x_train, y_train, x_test, y_test
+
+def return_mnist_processed_data():
+    # the data, split between train and test sets
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data(path='mnist.npz')
+    x_train = x_train.reshape(60000, 784)
+    x_test =  x_test.reshape(10000, 784)
+    x_train =x_train.astype('float32')
+    x_test = x_test.astype('float32')
+    x_train /= 255
+    x_test /= 255
+    
+    # convert class vectors to binary class matrices
+    num_classes = 10
+    y_train = tf.keras.utils.to_categorical(y_train, num_classes)
+    y_test = tf.keras.utils.to_categorical(y_test, num_classes)
+    y_train = np.reshape(y_train, (60000,num_classes))
+    y_test = np.reshape(y_test, (10000,num_classes))
+    
+    return x_train, y_train, x_test, y_test
+
+def return_taiwan_processed_data():
+    #Load the data
+    dataset = pd.read_excel("default_data.xls")
+    dataset.index = dataset['ID']
+    dataset.drop('ID',axis=1,inplace=True)
+    dataset['SEX'].value_counts(dropna=False)
+    dataset['EDUCATION'].value_counts(dropna=False)
+    dataset = dataset.rename(columns={'PAY_0': 'PAY_1'})
+    
+    # Clean the data
+    fil = (dataset.EDUCATION == 5) | (dataset.EDUCATION == 6) | (dataset.EDUCATION == 0)
+    dataset.loc[fil, 'EDUCATION'] = 4
+    dataset['EDUCATION'].value_counts(dropna = False)
+    dataset.loc[dataset.MARRIAGE == 0, 'MARRIAGE'] = 3
+    
+    fil = (dataset.PAY_1 == -1) | (dataset.PAY_1==-2)
+    dataset.loc[fil,'PAY_1']=0
+    dataset.PAY_1.value_counts()
+    fil = (dataset.PAY_2 == -1) | (dataset.PAY_2==-2)
+    dataset.loc[fil,'PAY_2']=0
+    dataset.PAY_2.value_counts()
+    fil = (dataset.PAY_3 == -1) | (dataset.PAY_3==-2)
+    dataset.loc[fil,'PAY_3']=0
+    dataset.PAY_3.value_counts()
+    fil = (dataset.PAY_4 == -1) | (dataset.PAY_4==-2)
+    dataset.loc[fil,'PAY_4']=0
+    dataset.PAY_4.value_counts()
+    fil = (dataset.PAY_5 == -1) | (dataset.PAY_5==-2)
+    dataset.loc[fil,'PAY_5']=0
+    dataset.PAY_5.value_counts()
+    fil = (dataset.PAY_6 == -1) | (dataset.PAY_6==-2)
+    dataset.loc[fil,'PAY_6']=0
+    dataset.columns = dataset.columns.map(str.lower)
+     
+    #Standardize the numerical columns
+    col_to_norm = ['limit_bal', 'age', 'bill_amt1', 'bill_amt2', 'bill_amt3', 'bill_amt4',
+           'bill_amt5', 'bill_amt6', 'pay_amt1', 'pay_amt2', 'pay_amt3',
+           'pay_amt4', 'pay_amt5', 'pay_amt6']
+    dataset[col_to_norm] = dataset[col_to_norm].apply(lambda x : (x-np.mean(x))/np.std(x))
+    
+    #Split the data into training and test set
+    X = dataset.iloc[:,:-1].values
+    y = dataset.iloc[:,-1].values
+    x_train,x_test,y_train,y_test = train_test_split(X,y,test_size = 0.3,random_state = 1)
+    
+    return x_train, y_train, x_test, y_test
