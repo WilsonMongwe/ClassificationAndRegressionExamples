@@ -1,7 +1,7 @@
 # Nested Sampling for SLP search
-Can Bayesian evidence be used for machine learning model selection?
+Can Bayesian evidence be used for machine learning model hyper-parameter optimization?
 
-In this mini project we search for the optimal number of hidden units in a single hidden layer perceptron (SLP) using the 
+In this short project we search for the optimal number of hidden units in a single hidden layer perceptron (SLP) using the 
 Nested Sampling approach of Skilling. We document the results for the following datasets:
 
 	0) Regression problems - Boston house price dataset 
