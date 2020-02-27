@@ -11,8 +11,8 @@ Nested Sampling approach of Skilling. We document the results for the following 
 
 Nested sampling is an approach for calculating bayesian evidences while simultaneously computing the posterior probability distribution of the parameters. The basics steps of this algorithm are:
 
-	0) Draw N 'live points' from the prior, and evaluate their likelihoods
-	1) Delete the lowest likelihood live point, and replace it with a new point drawn from the prior, but at higher likelihood
+	0) Draw N live points from the prior distribution, and calculate their likelihoods
+	1) Delete the lowest likelihood live point, and replace it with a new point drawn from the prior, but with higher likelihood
 	2) Repeat 1) until some stopping criteria is met. 
 
 ## Prior
