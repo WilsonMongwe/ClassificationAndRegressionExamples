@@ -13,7 +13,7 @@ random.seed(1)
 # the data, split between train and test sets
 x_train, y_train, x_test, y_test = u.return_mnist_processed_data()
 
-number_of_samples = 2000
+number_of_samples = 6000
 x_train = x_train[0:number_of_samples]
 y_train = y_train[0:number_of_samples]
 
@@ -33,7 +33,7 @@ def log_likelihood(W, *logl_args):
 
 #Store results
 results_list = [] # to store result of nested sampling
-x_axis = range(1,10,1) # Number of hidden units
+x_axis = range(1,11,1) # Number of hidden units
 # Architecture for mlp
 input_neurons = x_train.shape[1] # inputs
 output_neurons = 10
@@ -42,7 +42,7 @@ start = datetime.now()
 for i  in x_axis:
     hidden_neurons = i
     ndim_1 =  (input_neurons+1) * (hidden_neurons) + (hidden_neurons + 1) * output_neurons
-    nlive = 500 #ndim_1*100
+    nlive = 50 #ndim_1*100
     logl_args = [input_neurons, hidden_neurons, output_neurons]
     
     print(" ")
@@ -79,7 +79,7 @@ ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('Log evidence')
 plt.plot(x_axis, logZ, '-o')
 plt.show()
-fig.savefig('results/MNIST_log_evidence.png')
+fig.savefig('results/mnist_log_evidence.png')
 
 plt.style.use(['bmh'])
 fig, ax = plt.subplots(1)
