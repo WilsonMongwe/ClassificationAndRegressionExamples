@@ -5,7 +5,7 @@ In this short project we search for the optimal number of hidden units in a sing
 Nested Sampling approach of Skilling. We document the results for the following datasets:
 
 	0) Regression problems - Boston house price dataset 
-	1) Classification problems - Iris dataset 
+	1) Classification problems - Iris dataset, Taiwan credit default dataset 
 	
 ## Nested sampling
 
@@ -26,5 +26,5 @@ We set out the log likelihood functions as follows:
 	a) Regression problems - the log likelihood was set to equal the negative of the mean squared error (MSE). This has the effect of us implicitly assuming that the output variable has a normal distribution.
 	b) Classification problems - the log likelihood was set to equal the negative of the cross entropy loss. This has the effect of us implicitly assuming that the output variable has a multinomial distribution
 	
-## Neural network comments
+## Neural network considerations
 We assumed a tanh activation for the hidden layer for both types of problems. Classification problems had the softmax (or sigmoid) activation at the output layer. No activation function was applied at the output layer for the regression problems.
