@@ -28,3 +28,6 @@ We set out the log likelihood functions as follows:
 	
 ## Neural network considerations
 We assumed a tanh activation for the hidden layer for both types of problems. Classification problems had the softmax (or sigmoid) activation at the output layer. No activation function was applied at the output layer for the regression problems.
+
+## Results
+There is a high correlation between the evidence of the model (calculated using the training dataset) and the models performance on a test dataset.
