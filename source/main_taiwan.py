@@ -29,7 +29,7 @@ def log_likelihood(W, *logl_args):
 
 #Store results
 results_list = [] # to store result of nested sampling
-x_axis = range(1,11,1) # Number of hidden units
+x_axis = range(1,21,1) # Number of hidden units
 # Architecture for mlp
 input_neurons = x_train.shape[1] # inputs
 output_neurons = 1
@@ -38,7 +38,7 @@ start = datetime.now()
 for i  in x_axis:
     hidden_neurons = i
     ndim_1 =  (input_neurons+1) * (hidden_neurons) + (hidden_neurons + 1) * output_neurons
-    nlive = 500 #ndim_1*100
+    nlive = 1000 #ndim_1*100
     logl_args = [input_neurons, hidden_neurons, output_neurons]
     
     print(" ")
@@ -53,7 +53,7 @@ for i  in x_axis:
                                    bound ='multi',
                                    sample ='hslice'
                                    ) 
-    sampler.run_nested(dlogz = 10000)
+    sampler.run_nested(dlogz = 8000)
     res = sampler.results
     results_list.append(res)
 
@@ -66,7 +66,7 @@ print("\n Time :::", end - start)
 x = x_train
 y = y_train
 
-logZ, accuracy_list = u.single_class_return_results(x, y, results_list, 
+logZ, accuracy_list, predictions_list = u.single_class_return_results(x, y, results_list, 
                                         x_axis, input_neurons, output_neurons)
 
 plt.style.use(['bmh'])
@@ -89,7 +89,7 @@ fig.savefig('results/taiwan_accuracy_train.png')
 # test data set
 x = x_test
 y = y_test
-logZ, accuracy_list = u.single_class_return_results(x, y, results_list, 
+logZ, accuracy_list, predictions_list = u.single_class_return_results(x, y, results_list, 
                                         x_axis, input_neurons, output_neurons)
 
 plt.style.use(['bmh'])

@@ -207,7 +207,7 @@ def single_class_return_results(x, y, results_list, x_axis,
         y_pred = predictions_list[i-1]
         accuracy_list.append(metrics.accuracy_score(y, y_pred))
 
-    return logZ, accuracy_list
+    return logZ, accuracy_list, predictions_list
 
 
 ''' Loading in the data'''
