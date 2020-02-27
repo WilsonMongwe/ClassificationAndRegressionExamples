@@ -33,7 +33,7 @@ def log_likelihood(W, *logl_args):
 
 #Store results
 results_list = [] # to store result of nested sampling
-x_axis = range(1,11,1) # Number of hidden units
+x_axis = range(1,51,1) # Number of hidden units
 # Architecture for mlp
 input_neurons = x_train.shape[1] # inputs
 output_neurons = 10
@@ -42,7 +42,7 @@ start = datetime.now()
 for i  in x_axis:
     hidden_neurons = i
     ndim_1 =  (input_neurons+1) * (hidden_neurons) + (hidden_neurons + 1) * output_neurons
-    nlive = 50 #ndim_1*100
+    nlive = 30 #ndim_1*100
     logl_args = [input_neurons, hidden_neurons, output_neurons]
     
     print(" ")
