@@ -7,6 +7,7 @@ import tensorflow as tf
 from sklearn import datasets
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn import metrics
+import dynesty
 
 def categorical_accuracy(y_true, y_pred):
     correct = 0
@@ -40,9 +41,9 @@ def mean_squared_error(predictions, targets):
     mse = metrics.mean_squared_error(predictions, targets)
     return mse
 
-def regression_neural_network(X, w_1, b_1, w_2):
+def regression_neural_network(X, w_1, b_1, w_2, b_2):
     hidden_layer = np.tanh((X @ w_1) + b_1.T)
-    y = hidden_layer @ w_2 # no bias required on this layer
+    y = hidden_layer @ w_2 + b_2.T# no bias required on this layer
     return y
 
 def multi_class_neural_network(X, w_1, b_1, w_2, b_2):
@@ -63,10 +64,13 @@ def regression_predictions(X, W, input_neurons, hidden_neurons, output_neurons):
     b_1 = W[param_1:param_1+ bias_1]
     
     param_2 = hidden_neurons * output_neurons
+    bias_2 = output_neurons
     w_2 = W[param_1 + bias_1:param_1 + bias_1 + param_2]
     w_2 = w_2.reshape((hidden_neurons, output_neurons))
+    b_2 = W[param_1 + bias_1 + param_2:param_1+ 
+            bias_1 + param_2 + bias_2]
 
-    predictions = regression_neural_network(X, w_1, b_1, w_2)
+    predictions = regression_neural_network(X, w_1, b_1, w_2,b_2)
     
     return predictions
 
@@ -111,13 +115,18 @@ def single_class_predictions(X, W, input_neurons, hidden_neurons, output_neurons
 def return_results_regression(x, y, results_list, x_axis,
                               input_neurons, output_neurons):
     logZ =[]
+    logZ_LOWER =[]
+    logZ_UPPER =[]
     for i in results_list:
         logZ.append(i.logz[-1])
+        logZ_LOWER.append(i.logz[-1]-3*i.logzerr[-1])
+        logZ_UPPER.append(i.logz[-1]+3*i.logzerr[-1])
 
     samples_list = []
     weights_list = []
     index_max_list = []
-    predictions_list = []
+    predictions_list_mode = []
+    predictions_list_mean = []
     
     for i in results_list:
         samples, weights = i.samples, np.exp(i.logwt - i.logz[-1])
@@ -129,17 +138,25 @@ def return_results_regression(x, y, results_list, x_axis,
         hidden_neurons = i
         samples = samples_list[i-1]
         weights = weights_list[i-1]
-        #W, cov = dynesty.utils.mean_and_cov(samples, weights)
-        W = samples[index_max_list[i-1]]
-        predictions_list.append(
-            regression_predictions(x, W, input_neurons,hidden_neurons, output_neurons))
+        W_mean, cov = dynesty.utils.mean_and_cov(samples, weights)
+        W_mode = samples[index_max_list[i-1]]
+        predictions_list_mode.append(
+            regression_predictions(x, W_mode, input_neurons,hidden_neurons, output_neurons))
+        predictions_list_mean.append(
+            regression_predictions(x, W_mean, input_neurons,hidden_neurons, output_neurons))
     
-    mse_list = []
+    mse_list_mode = []
+    mse_list_mean = []
     for i  in x_axis:
-        y_pred = predictions_list[i-1]
-        mse_list.append(metrics.mean_squared_error(y, y_pred))
+        y_pred_mode = predictions_list_mode[i-1]
+        y_pred_mean = predictions_list_mean[i-1]
+        mse_list_mode.append(metrics.mean_squared_error(y, y_pred_mode))
+        mse_list_mean.append(metrics.mean_squared_error(y, y_pred_mean))
         
-    return logZ, mse_list
+    return logZ,logZ_LOWER, logZ_UPPER, mse_list_mode, mse_list_mean
+
+
+
 
 
 
@@ -197,9 +214,9 @@ def single_class_return_results(x, y, results_list, x_axis,
         hidden_neurons = i
         samples = samples_list[i-1]
         weights = weights_list[i-1]
-        #W, cov = dynesty.utils.mean_and_cov(samples, weights)
-        W = samples[index_max_list[i-1]]
-        predictions_list.append(np.round(single_class_predictions(x, W, 
+        W_mean, cov = dynesty.utils.mean_and_cov(samples, weights)
+        W_mode = samples[index_max_list[i-1]]
+        predictions_list.append(np.round(single_class_predictions(x, W_mode, 
                                             input_neurons, hidden_neurons, output_neurons)))
     
     accuracy_list = []

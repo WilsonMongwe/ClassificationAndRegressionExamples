@@ -27,7 +27,7 @@ def log_likelihood(W, *logl_args):
 
 #Store results
 results_list = [] # to store result of nested sampling
-x_axis = range(1,21,1) # Number of hidden units
+x_axis = range(1,200,1) # Number of hidden units
 # Architecture for mlp
 input_neurons = x_train.shape[1] # inputs
 output_neurons = 1
@@ -35,13 +35,13 @@ output_neurons = 1
 start = datetime.now()
 for i  in x_axis:
     hidden_neurons = i
-    ndim_1 =  (input_neurons+1) * (hidden_neurons) + (hidden_neurons) * output_neurons
-    nlive = ndim_1 * 100
+    ndim_1 =  (input_neurons+1) * (hidden_neurons) + (hidden_neurons +1) * output_neurons
+    nlive = 100 * ndim_1
     logl_args = [input_neurons, hidden_neurons, output_neurons]
     
     print(" ")
     print("\n NUmber of hidden neurons :::::", hidden_neurons, ":::::::::::::::::::\n")
-    
+    random.seed(1)
     sampler = dynesty.NestedSampler(log_likelihood,
                                    prior_ptform,
                                    ndim = ndim_1,
@@ -51,7 +51,7 @@ for i  in x_axis:
                                    bound ='multi',
                                    sample ='hslice'
                                    ) 
-    sampler.run_nested(dlogz=200)
+    sampler.run_nested(maxiter = 10)
     res = sampler.results
     results_list.append(res)
 
@@ -63,7 +63,7 @@ print("\n Time :::", end - start)
 # train metrics
 x = x_train
 y = y_train
-logZ, accuracy_list = u.return_results_regression(x, y, results_list, 
+logZ,logZ_LOWER, logZ_UPPER, mse_list_mode, mse_list_mean = u.return_results_regression(x, y, results_list, 
                                         x_axis, input_neurons, output_neurons)
 
 plt.style.use(['bmh'])
@@ -71,7 +71,10 @@ fig, ax = plt.subplots(1)
 fig.suptitle('Boston Dataset', fontsize=16)
 ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('Log evidence')
-plt.plot(x_axis, logZ, '-o')
+plt.plot(x_axis, logZ, '-o', label="Log evidence")
+#plt.plot(x_axis, logZ_LOWER, '-o', label="3 sd lower bound")
+#plt.plot(x_axis, logZ_UPPER, '-o', label="3 sd upper bound")
+plt.legend(loc=2)
 plt.show()
 fig.savefig('results/boston_log_evidence.png')
 
@@ -80,20 +83,23 @@ fig, ax = plt.subplots(1)
 fig.suptitle('Boston Dataset -Train', fontsize=16)
 ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('MSE')
-plt.plot(x_axis, accuracy_list, '-o')
+plt.plot(x_axis, mse_list_mode, '-o', label="MSE from mode weights")
+#plt.plot(x_axis, mse_list_mean, '-o', label="MSE from mean weights")
+plt.legend(loc=3)
 plt.show()
 fig.savefig('results/boston_mse_train.png')
 # test data set
 x = x_test
 y = y_test
-logZ, accuracy_list = u.return_results_regression(x, y, results_list, 
+logZ,logZ_LOWER, logZ_UPPER, mse_list_mode, mse_list_mean = u.return_results_regression(x, y, results_list, 
                                         x_axis, input_neurons, output_neurons)
-
 plt.style.use(['bmh'])
 fig, ax = plt.subplots(1)
-fig.suptitle('Boston Dataset - Test', fontsize=16)
+fig.suptitle('Boston Dataset -Test', fontsize=16)
 ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('MSE')
-plt.plot(x_axis, accuracy_list, '-o')
+plt.plot(x_axis, mse_list_mode, '-o', label="MSE from mode weights")
+#plt.plot(x_axis, mse_list_mean, '-o', label="MSE from mean weights")
+plt.legend(loc=3)
 plt.show()
-fig.savefig('results/boston_mse_test.png')
+fig.savefig('results/boston_mse_testpng')
