@@ -115,18 +115,13 @@ def single_class_predictions(X, W, input_neurons, hidden_neurons, output_neurons
 def return_results_regression(x, y, results_list, x_axis,
                               input_neurons, output_neurons):
     logZ =[]
-    logZ_LOWER =[]
-    logZ_UPPER =[]
     for i in results_list:
         logZ.append(i.logz[-1])
-        logZ_LOWER.append(i.logz[-1]-3*i.logzerr[-1])
-        logZ_UPPER.append(i.logz[-1]+3*i.logzerr[-1])
 
     samples_list = []
     weights_list = []
     index_max_list = []
     predictions_list_mode = []
-    predictions_list_mean = []
     
     for i in results_list:
         samples, weights = i.samples, np.exp(i.logwt - i.logz[-1])
@@ -141,19 +136,13 @@ def return_results_regression(x, y, results_list, x_axis,
         W_mean, cov = dynesty.utils.mean_and_cov(samples, weights)
         W_mode = samples[index_max_list[i-1]]
         predictions_list_mode.append(
-            regression_predictions(x, W_mode, input_neurons,hidden_neurons, output_neurons))
-        predictions_list_mean.append(
-            regression_predictions(x, W_mean, input_neurons,hidden_neurons, output_neurons))
-    
+            regression_predictions(x, W_mode, input_neurons,hidden_neurons, output_neurons))    
     mse_list_mode = []
-    mse_list_mean = []
     for i  in x_axis:
         y_pred_mode = predictions_list_mode[i-1]
-        y_pred_mean = predictions_list_mean[i-1]
         mse_list_mode.append(metrics.mean_squared_error(y, y_pred_mode))
-        mse_list_mean.append(metrics.mean_squared_error(y, y_pred_mean))
         
-    return logZ,logZ_LOWER, logZ_UPPER, mse_list_mode, mse_list_mean
+    return logZ,mse_list_mode
 
 
 

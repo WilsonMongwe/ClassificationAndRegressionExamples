@@ -16,6 +16,8 @@ def prior_ptform(uTheta):
     theta = norm.ppf(uTheta, loc = 0, scale = 1)    
     return theta
 
+
+
 def log_likelihood(W, *logl_args):
     y_pred = u.regression_predictions(x_train, W, 
                            logl_args[0], 
@@ -27,7 +29,7 @@ def log_likelihood(W, *logl_args):
 
 #Store results
 results_list = [] # to store result of nested sampling
-x_axis = range(1,200,1) # Number of hidden units
+x_axis = range(1,21,1) # Number of hidden units
 # Architecture for mlp
 input_neurons = x_train.shape[1] # inputs
 output_neurons = 1
@@ -40,8 +42,8 @@ for i  in x_axis:
     logl_args = [input_neurons, hidden_neurons, output_neurons]
     
     print(" ")
-    print("\n NUmber of hidden neurons :::::", hidden_neurons, ":::::::::::::::::::\n")
-    random.seed(1)
+    print("\n Number of hidden neurons :::::", hidden_neurons, ":::::::::::::::::::\n")
+   
     sampler = dynesty.NestedSampler(log_likelihood,
                                    prior_ptform,
                                    ndim = ndim_1,
@@ -51,7 +53,7 @@ for i  in x_axis:
                                    bound ='multi',
                                    sample ='hslice'
                                    ) 
-    sampler.run_nested(maxiter = 10)
+    sampler.run_nested(maxiter = 5000)
     res = sampler.results
     results_list.append(res)
 
@@ -63,7 +65,7 @@ print("\n Time :::", end - start)
 # train metrics
 x = x_train
 y = y_train
-logZ,logZ_LOWER, logZ_UPPER, mse_list_mode, mse_list_mean = u.return_results_regression(x, y, results_list, 
+logZ, mse_list_mode = u.return_results_regression(x, y, results_list, 
                                         x_axis, input_neurons, output_neurons)
 
 plt.style.use(['bmh'])
@@ -74,7 +76,7 @@ ax.set_ylabel('Log evidence')
 plt.plot(x_axis, logZ, '-o', label="Log evidence")
 #plt.plot(x_axis, logZ_LOWER, '-o', label="3 sd lower bound")
 #plt.plot(x_axis, logZ_UPPER, '-o', label="3 sd upper bound")
-plt.legend(loc=2)
+plt.legend(loc=1)
 plt.show()
 fig.savefig('results/boston_log_evidence.png')
 
@@ -91,7 +93,7 @@ fig.savefig('results/boston_mse_train.png')
 # test data set
 x = x_test
 y = y_test
-logZ,logZ_LOWER, logZ_UPPER, mse_list_mode, mse_list_mean = u.return_results_regression(x, y, results_list, 
+logZ, mse_list_mode  = u.return_results_regression(x, y, results_list, 
                                         x_axis, input_neurons, output_neurons)
 plt.style.use(['bmh'])
 fig, ax = plt.subplots(1)
