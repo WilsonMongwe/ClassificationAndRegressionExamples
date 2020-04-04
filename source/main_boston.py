@@ -13,7 +13,7 @@ x_train, y_train, x_test, y_test = u.return_boston_processed_data()
 
 
 def prior_ptform(uTheta):
-    theta = norm.ppf(uTheta, loc = 0, scale = 1)    
+    theta = norm.ppf(uTheta, loc = 0, scale = 10)    
     return theta
 
 
@@ -65,17 +65,23 @@ print("\n Time :::", end - start)
 # train metrics
 x = x_train
 y = y_train
-logZ, mse_list_mode = u.return_results_regression(x, y, results_list, 
+logZ_train, mse_list_mode = u.return_results_regression(x, y, results_list, 
                                         x_axis, input_neurons, output_neurons)
+
+
+# test data set
+x = x_test
+y = y_test
+logZ, mse_list_mode  = u.return_results_regression(x, y, results_list, 
+                                        x_axis, input_neurons, output_neurons)
+
 
 plt.style.use(['bmh'])
 fig, ax = plt.subplots(1)
 fig.suptitle('Boston Dataset', fontsize=16)
 ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('Log evidence')
-plt.plot(x_axis, logZ, '-o', label="Log evidence")
-#plt.plot(x_axis, logZ_LOWER, '-o', label="3 sd lower bound")
-#plt.plot(x_axis, logZ_UPPER, '-o', label="3 sd upper bound")
+plt.plot(x_axis, logZ_train, '-o', label="Log evidence")
 plt.legend(loc=1)
 plt.show()
 fig.savefig('results/boston_log_evidence.png')
@@ -86,22 +92,18 @@ fig.suptitle('Boston Dataset -Train', fontsize=16)
 ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('MSE')
 plt.plot(x_axis, mse_list_mode, '-o', label="MSE from mode weights")
-#plt.plot(x_axis, mse_list_mean, '-o', label="MSE from mean weights")
 plt.legend(loc=3)
 plt.show()
 fig.savefig('results/boston_mse_train.png')
-# test data set
-x = x_test
-y = y_test
-logZ, mse_list_mode  = u.return_results_regression(x, y, results_list, 
-                                        x_axis, input_neurons, output_neurons)
+
 plt.style.use(['bmh'])
 fig, ax = plt.subplots(1)
 fig.suptitle('Boston Dataset -Test', fontsize=16)
 ax.set_xlabel('Number of hidden units')
 ax.set_ylabel('MSE')
 plt.plot(x_axis, mse_list_mode, '-o', label="MSE from mode weights")
-#plt.plot(x_axis, mse_list_mean, '-o', label="MSE from mean weights")
 plt.legend(loc=3)
 plt.show()
 fig.savefig('results/boston_mse_testpng')
+
+print(logZ_train)
