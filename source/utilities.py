@@ -5,7 +5,7 @@ import scipy.special
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from sklearn import datasets
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, MinMaxScaler
 from sklearn import metrics
 import dynesty
 
@@ -133,7 +133,6 @@ def return_results_regression(x, y, results_list, x_axis,
         hidden_neurons = i
         samples = samples_list[i-1]
         weights = weights_list[i-1]
-        W_mean, cov = dynesty.utils.mean_and_cov(samples, weights)
         W_mode = samples[index_max_list[i-1]]
         predictions_list_mode.append(
             regression_predictions(x, W_mode, input_neurons,hidden_neurons, output_neurons))    
@@ -142,7 +141,7 @@ def return_results_regression(x, y, results_list, x_axis,
         y_pred_mode = predictions_list_mode[i-1]
         mse_list_mode.append(metrics.mean_squared_error(y, y_pred_mode))
         
-    return logZ,mse_list_mode
+    return logZ, mse_list_mode
 
 
 
@@ -242,7 +241,7 @@ def return_boston_processed_data():
     X, Y = datasets.load_boston(return_X_y =True)
         
     # Scale features to have mean 0 and variance 1 
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
     X_scaled = scaler.fit_transform(X)
     
     # Split the data set into training and testing
