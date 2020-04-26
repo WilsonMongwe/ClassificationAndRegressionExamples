@@ -6,15 +6,29 @@ import matplotlib.pyplot as plt
 import random
 import csv  
 import pandas as pd
-
-random.seed(1)
+import math
 
 # the data, split between train and test sets
+random.seed(1)
 x_train, y_train, x_test, y_test = u.return_boston_processed_data()
 
-logz_file_name = r'logz6.csv'
-mse_train_file_name = r'mse_train6.csv'
-mse_test_file_name = r'mse_test6.csv'
+
+# write out train data
+boston_train = r'boston_data_train.csv'
+df_train = pd.DataFrame(data=x_train)
+df_train[13] = y_train 
+df_train.to_csv(boston_train, index =False, header =False)
+
+# write out test data
+boston_test = r'boston_data_test.csv'
+df_test = pd.DataFrame(data=x_test)
+df_test[13] = y_test
+df_test.to_csv(boston_test, index =False, header =False)
+
+
+logz_file_name = r'logz_boston.csv'
+mse_train_file_name = r'mse_train_boston.csv'
+mse_test_file_name = r'mse_test_boston.csv'
 
 #Store results
 x_axis = range(1, 31, 1) # Degree of polynomial
@@ -23,8 +37,16 @@ sims = range(1, 31, 1) # How many times to runj the simulations
 input_neurons = x_train.shape[1] # inputs
 output_neurons = 1
 
-def prior_ptform(uTheta):
-    theta = norm.ppf(uTheta, loc = 0, scale = 5)    
+# Read in alpha and beta from GA results
+alpha = pd.read_excel("alpha_boston_mean.xlsx").values
+beta = pd.read_excel("beta_boston_mean.xlsx").values
+
+alpha = alpha.reshape(30,1)
+beta = beta.reshape(30,1)
+
+def prior_ptform(uTheta,*ptform_args):
+    alpha_val = ptform_args[0]
+    theta = norm.ppf(uTheta, loc = 0, scale = 1/alpha_val)  
     return theta
 
 def log_likelihood(W, *logl_args):
@@ -32,8 +54,9 @@ def log_likelihood(W, *logl_args):
                            logl_args[0], 
                            logl_args[1], 
                            logl_args[2])
-    val = -u.mean_squared_error(y_pred, y_train)
-    return val
+    beta_val = logl_args[3]
+    val = -u.mean_squared_error(y_pred, y_train) 
+    return val*beta_val
 
 with open(logz_file_name, 'a') as f:
     writer = csv.writer(f)
@@ -57,7 +80,8 @@ for s  in sims:
         hidden_neurons = i
         ndim_1 =  (input_neurons+1) * (hidden_neurons) + (hidden_neurons +1) * output_neurons
         nlive = 100 * ndim_1
-        logl_args = [input_neurons, hidden_neurons, output_neurons]
+        logl_args = [input_neurons, hidden_neurons, output_neurons, beta[29][0]]
+        ptform_args = [alpha[29][0]]
         
         print(" ")
         print("\n Number of hidden neurons :::::", hidden_neurons, ":::::::::::::::::::\n")
@@ -66,9 +90,10 @@ for s  in sims:
                                        prior_ptform,
                                        ndim = ndim_1,
                                        nlive = nlive,
-                                       logl_args = logl_args
+                                       logl_args = logl_args,
+                                       ptform_args = ptform_args
                                        )
-        sampler.run_nested(maxiter = 5000)
+        sampler.run_nested(maxiter = 300)
         res = sampler.results
         results_list.append(res)
         
@@ -99,23 +124,23 @@ print("\n Time :::", end - start)
 
 '''Plots '''
 #read in data stored in the files 
-data_logz = pd.read_csv("logz6.csv") 
-data_mse_train = pd.read_csv("mse_train6.csv") 
-data_mse_test = pd.read_csv("mse_test6.csv") 
+data_logz = pd.read_csv("logz_boston.csv") 
+data_mse_train = pd.read_csv("mse_train_boston.csv") 
+data_mse_test = pd.read_csv("mse_test_boston.csv") 
 
 logz_train_avarage = data_logz.mean()
 mse_train_avarage = data_mse_train.mean()
 mse_test_avarage = data_mse_test.mean()
 
-with open(r'logz6_mean.csv', 'a') as f:
+with open(r'logz_boston_mean.csv', 'a') as f:
     writer = csv.writer(f)
     writer.writerow(logz_train_avarage)
     
-with open(r'mse_train6_mean.csv', 'a') as f:
+with open(r'mse_train_boston_mean.csv', 'a') as f:
     writer = csv.writer(f)
     writer.writerow(mse_train_avarage)
 
-with open(r'mse_test6_mean.csv', 'a') as f:
+with open(r'mse_test_boston_mean.csv', 'a') as f:
     writer = csv.writer(f)
     writer.writerow(mse_test_avarage)
 

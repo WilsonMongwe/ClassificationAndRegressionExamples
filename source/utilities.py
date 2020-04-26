@@ -250,6 +250,78 @@ def return_boston_processed_data():
     
     return x_train, y_train, x_test, y_test
 
+def return_protein_processed_data():
+    dataset = pd.read_csv("Protein_Data.csv", header = None) 
+     #Split the data into training and test set
+    X = dataset.iloc[:,:-1].values
+    y = dataset.iloc[:,-1].values
+    
+    # Scale features to have mean 0 and variance 1 
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    x_train,x_test,y_train,y_test = train_test_split(X_scaled,y,test_size = 0.3,random_state = 1)
+    
+    return x_train, y_train, x_test, y_test
+
+def return_yacht_processed_data():
+    dataset = pd.read_csv("Yacht_Data.txt", sep=" ", header=None) 
+     #Split the data into training and test set
+    X = dataset.iloc[:,:-1].values
+    y = dataset.iloc[:,-1].values
+    
+    # Scale features to have mean 0 and variance 1 
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    x_train,x_test,y_train,y_test = train_test_split(X_scaled,y,test_size = 0.3,random_state = 1)
+    
+    return x_train, y_train, x_test, y_test
+
+
+def return_diabetes_processed_data():
+    X, Y = datasets.load_diabetes(return_X_y =True)
+        
+    # Scale features to have mean 0 and variance 1 
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    # Split the data set into training and testing
+    x_train, x_test, y_train, y_test = train_test_split(
+        X_scaled, Y, test_size = 0.3, random_state = 1)
+    
+    return x_train, y_train, x_test, y_test
+
+def return_concrete_processed_data():
+    dataset = pd.read_excel("Concrete_Data.xls")
+        
+    #Split the data into training and test set
+    X = dataset.iloc[:,:-1].values
+    y = dataset.iloc[:,-1].values
+    
+    # Scale features to have mean 0 and variance 1 
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    x_train,x_test,y_train,y_test = train_test_split(X_scaled,y,test_size = 0.3,random_state = 1)
+    
+    return x_train, y_train, x_test, y_test
+
+def return_power_processed_data():
+    dataset = pd.read_excel("Power_Data.xlsx")
+        
+    #Split the data into training and test set
+    X = dataset.iloc[:,:-1].values
+    y = dataset.iloc[:,-1].values
+    
+    # Scale features to have mean 0 and variance 1 
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    x_train,x_test,y_train,y_test = train_test_split(X_scaled,y,test_size = 0.3,random_state = 1)
+    
+    return x_train, y_train, x_test, y_test
+
 def return_mnist_processed_data():
     # the data, split between train and test sets
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data(path='mnist.npz')
