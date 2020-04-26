@@ -144,6 +144,11 @@ def return_results_regression(x, y, results_list, x_axis,
     return logZ, mse_list_mode
 
 
+def return_results_regression_simple(results_list):
+    logZ =[]
+    for i in results_list:
+        logZ.append(i.logz[-1])
+    return logZ
 
 
 
